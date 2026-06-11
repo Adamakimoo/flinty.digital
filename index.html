@@ -87,14 +87,14 @@
       --emerald-glow: rgba(16,185,129,0.35);
     }
 
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; overflow-x: clip; }
 
     body {
       font-family: 'DM Sans', sans-serif;
       background: var(--ink);
       color: var(--off-white);
       line-height: 1.6;
-      overflow-x: hidden;
+      overflow-x: clip;
     }
 
     ::selection { background: var(--spark); color: #04110b; }
@@ -502,8 +502,19 @@
       #about, #contact { grid-template-columns: 1fr; gap: 3rem; }
       .about-visual { order: -1; }
       .form-row { grid-template-columns: 1fr; }
-      .hero-stats { gap: 1.5rem; }
+      .hero-stats { gap: 1rem 2rem; margin-top: 1.75rem; }
+      .hero-sub { margin-bottom: 1.75rem; }
+      .hero-eyebrow { margin-bottom: 1.25rem; }
+      h1 { margin-bottom: 1.1rem; }
       .hero-stage { height: 260vh; }
+      h1 { font-size: clamp(2.1rem, 10.5vw, 2.9rem); }
+      .hero { padding-top: 4.5rem; align-items: flex-start; }
+      .hero-content { padding-top: 7vh; }
+      .scroll-hint { display: none; }
+      .hero-sub { text-shadow: 0 1px 12px rgba(6,8,7,0.9); }
+      .stat-number { font-size: 1.7rem; }
+      #crystal-canvas { opacity: 0.65; }
+      .shatter-word p { font-size: clamp(2rem, 11vw, 3.2rem); }
     }
 
     /* ── SCROLL ANIMATION (no-JS-safe: visible by default, JS opts in) ── */
@@ -972,7 +983,17 @@
     // crystal sits right of centre on desktop, centred on mobile
     var isMobile = window.innerWidth < 768;
     var crystalGroup = new THREE.Group();
-    crystalGroup.position.x = isMobile ? 0 : 2.6;
+    function placeCrystal() {
+      isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        crystalGroup.position.x = 0.9;
+        crystalGroup.scale.setScalar(0.55);
+      } else {
+        crystalGroup.position.x = 2.6;
+        crystalGroup.scale.setScalar(1);
+      }
+    }
+    placeCrystal();
     scene.add(crystalGroup);
 
     // ── lights ──
@@ -1107,7 +1128,7 @@
       // group: idle rotation + slight scroll spin-up
       crystalGroup.rotation.y = t * 0.18 + p * 2.4;
       crystalGroup.rotation.x = Math.sin(t * 0.25) * 0.06 + p * 0.5;
-      crystalGroup.position.y = Math.sin(t * 0.8) * 0.12 * (1 - p);
+      crystalGroup.position.y = (isMobile ? 1.6 : 0) + Math.sin(t * 0.8) * 0.12 * (1 - p);
 
       // camera parallax + pull-back during explosion
       camera.position.x += ((mouse.x * 0.5) - camera.position.x) * 0.04;
@@ -1155,7 +1176,7 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      crystalGroup.position.x = window.innerWidth < 768 ? 0 : 2.6;
+      placeCrystal();
     });
   }
 
